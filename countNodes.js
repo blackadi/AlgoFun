@@ -45,51 +45,58 @@ tree.insert([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, null, null, null]);
 4. binary search will help optmize the solution to logN since we can divide the tree into two half
 */
 
-const checkLevel = (node, currentLevel) => {
-  if (!node) {
-    return currentLevel;
+const getTreeHieght = (node) => {
+  let counter = 0;
+  while (node.left !== null) {
+    counter++;
+    node = node.left;
   }
 
-  let res = currentLevel;
-
-  if (node.left) {
-    let temp = checkLevel(node.left, currentLevel + 1);
-    res = temp > res ? temp : res;
-  }
-
-  return res;
+  return counter;
 };
 
-const nodeCount = (node) => {
-  let level = checkLevel(node, 0);
-  let topLevelNodeCount = Math.pow(2, level) - 1;
+const nodeCount = (root) => {
+  if (!root) {
+    return 0;
+  }
 
-  // console.log(topLevelNodeCount);
+  let hieght = getTreeHieght(root);
+  if (hieght === 0) return 1;
+  const upperTreeNodeCount = Math.pow(2, hieght) - 1;
   let left = 0,
-    right = Math.pow(2, level),
-    indexTofind = Math.round((left + right) / 2);
+    right = upperTreeNodeCount;
 
-  let moves = [];
-
-  while (true) {
-    if (left > right) {
-      break;
-    }
-
-    let mid = Math.round((left + right) / 2);
-    if (mid >= indexTofind) {
-      moves.push("L");
-      right--;
-      left = mid;
+  while (left < right) {
+    let indexToFind = Math.ceil((left + right) / 2);
+    if (nodeExists(root, hieght, indexToFind)) {
+      left = indexToFind;
     } else {
-      moves.push("R");
-      left = mid;
-      right--;
+      right = indexToFind - 1;
     }
   }
-  console.log(moves);
+
+  return left + upperTreeNodeCount;
 };
 
+const nodeExists = (node, hieght, indexToFind) => {
+  let counter = 0;
+  let left = 0,
+    right = Math.pow(2, hieght) - 1;
+
+  while (counter < hieght) {
+    const midOfNode = Math.ceil((left + right) / 2);
+    if (midOfNode >= indexToFind) {
+      node = node.left;
+      right = midOfNode - 1;
+    } else {
+      node = node.right;
+      left = midOfNode;
+    }
+    counter++;
+  }
+
+  return node !== null;
+};
 // -------------- Nomal Code O(N) -----------------
 const DFS = (node, result) => {
   if (!node) {
@@ -109,4 +116,4 @@ const countNode = (root) => {
 };
 
 //console.log(countNode(tree));
-nodeCount(tree);
+console.log(nodeCount(tree));
