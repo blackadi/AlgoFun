@@ -1,58 +1,108 @@
+//Sample API desgin for heap and priority queue
+/***
+ * Sequence of methods exposed from this data structure
+ * 1. size --> return integer value of the current size of the heap
+ * 2. isEmpty --> return boolean value to check if heap has data or not
+ * 3. peek --> return integer, get the root element but do not remove it from the heap
+ * 4. push --> return void, add item to the heap
+ * 5. pop --> return integer, get and remove the root value of the heap and send it back
+ ***/
 class heaps {
-  constructor() {
-    this.tree = [];
+  //make it interchangable between max and min heap
+  //by default make it max heap
+  constructor(comparator = (parent, child) => parent < child) {
+    this._heap = []; //make it a private propertie inside the class
+    this._comparator = comparator;
   }
 
-  inseart(value) {
-    this.tree.push(value); // add value at the end
-    let newIndex = this.tree.length - 1;
+  size() {
+    return this._heap.length;
+  }
+
+  isEmpty() {
+    return this.size() === 0;
+  }
+
+  peek() {
+    return this._heap[0];
+  }
+
+  print() {
+    console.log(this._heap);
+  }
+
+  //helper funcation to get the index of the parent, left and right
+  //another one to swap two values based on there index
+  _parent(index) {
+    return Math.floor((index - 1) / 2);
+  }
+
+  _leftChild(index) {
+    return index * 2 + 1;
+  }
+
+  _rightChild(index) {
+    return index * 2 + 2;
+  }
+
+  _swap(index1, index2) {
+    let temp = this._heap[index1];
+    this._heap[index1] = this._heap[index2];
+    this._heap[index2] = temp;
+  }
+
+  //helper method to compare two vaules inside the heap based on there index
+  _compare(parent, child) {
+    return this._comparator(this._heap[parent], this._heap[child]);
+  }
+
+  push(value) {
+    this._heap.push(value); // add value at the end
+    let newIndex = this._heap.length - 1;
     if (newIndex > 0) {
       //get parent parent = floor((index - 1)/2) index here is the length - 1
-      let parent = Math.floor((newIndex - 1) / 2);
+      let parent = this._parent(newIndex);
 
       while (newIndex > 0) {
-        if (this.tree[parent] < this.tree[newIndex]) {
+        if (this._compare(parent, newIndex)) {
           //swap
-          let temp = this.tree[parent];
-          this.tree[parent] = this.tree[newIndex];
-          this.tree[newIndex] = temp;
+          this._swap(parent, newIndex);
         } else {
           break;
         }
         newIndex = parent;
-        parent = Math.floor((newIndex - 1) / 2);
+        parent = this._parent(newIndex);
       }
     }
 
-    return this.tree[0];
+    return this.peek();
   }
 
-  remove() {
+  pop() {
     //retrive the first value from the stack
-    const root = this.tree[0];
-    const lastVal = this.tree.pop();
-    this.tree[0] = lastVal; //add the last value to the root and check if it the max
+    const root = this._heap[0];
+    const lastVal = this._heap.pop();
+    this._heap[0] = lastVal; //add the last value to the root and check if it the max
     let parentIndex = 0;
 
-    let left = parentIndex * 2 + 1;
-    let right = parentIndex * 2 + 2;
+    let left = this._leftChild(parentIndex);
+    let right = this._rightChild(parentIndex);
 
-    while (left < this.tree.length && right < this.tree.length) {
+    while (left < this._heap.length && right < this._heap.length) {
       let maxIndex = 0;
-      if (this.tree[left] > this.tree[right]) {
+      if (this._heap[left] > this._heap[right]) {
         maxIndex = left;
       } else {
         maxIndex = right;
       }
 
-      if (this.tree[maxIndex] > this.tree[parentIndex]) {
+      if (this._compare(parentIndex, maxIndex)) {
         //swap
-        const temp = this.tree[parentIndex];
-        this.tree[parentIndex] = this.tree[maxIndex];
-        this.tree[maxIndex] = temp;
+        this._swap(parentIndex, maxIndex);
+
         parentIndex = maxIndex;
-        left = parentIndex * 2 + 1;
-        right = parentIndex * 2 + 2;
+        left = this._leftChild(parentIndex);
+        right = this._rightChild(parentIndex);
       }
     }
     return root;
@@ -60,18 +110,18 @@ class heaps {
 }
 
 let test = new heaps();
-test.inseart(75);
-test.inseart(50);
-test.inseart(25);
-test.inseart(45);
-test.inseart(35);
-test.inseart(10);
-test.inseart(15);
-test.inseart(20);
-test.inseart(40);
-test.inseart(100);
+test.push(75);
+test.push(50);
+test.push(25);
+test.push(45);
+test.push(35);
+test.push(10);
+test.push(15);
+test.push(20);
+test.push(40);
+test.push(100);
 
-console.log(test.tree);
+test.print();
 
-console.log(test.remove());
-console.log(test.tree);
+console.log(test.pop());
+test.print();
