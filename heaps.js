@@ -56,39 +56,33 @@ class heaps {
     return this._comparator(this._heap[parent], this._heap[child]);
   }
 
-  push(value) {
-    this._heap.push(value); // add value at the end
-    let newIndex = this._heap.length - 1;
-    if (newIndex > 0) {
-      //get parent parent = floor((index - 1)/2) index here is the length - 1
-      let parent = this._parent(newIndex);
+  _siftUp() {
+    let nodeIndex = this.siz - 1;
 
-      while (newIndex > 0) {
-        if (this._compare(parent, newIndex)) {
-          //swap
-          this._swap(parent, newIndex);
-        } else {
-          break;
-        }
-        newIndex = parent;
-        parent = this._parent(newIndex);
-      }
+    //get parent index
+    let parent = this._parent(nodeIndex);
+
+    //loop if node index is bigger than 0 (did not reach the top of the tree yet) and if the parent value is smaller than its child
+    while (nodeIndex > 0 && this._compare(parent, nodeIndex)) {
+      this._swap(parent, nodeIndex);
+      nodeIndex = parent;
+      parent = this._parent(nodeIndex);
     }
-
-    return this.peek();
   }
 
-  pop() {
-    //retrive the first value from the stack
-    const root = this._heap[0];
-    const lastVal = this._heap.pop();
-    this._heap[0] = lastVal; //add the last value to the root and check if it the max
+  push(value) {
+    this._heap.push(value); // add value at the end
+    this._siftUp();
+    return this.peek(); //return the root value
+  }
+
+  _siftDown() {
     let parentIndex = 0;
 
     let left = this._leftChild(parentIndex);
     let right = this._rightChild(parentIndex);
 
-    while (left < this._heap.length && right < this._heap.length) {
+    while (left < this.size() && right < this.size()) {
       let maxIndex = 0;
       if (this._heap[left] > this._heap[right]) {
         maxIndex = left;
@@ -105,6 +99,16 @@ class heaps {
         right = this._rightChild(parentIndex);
       }
     }
+  }
+
+  pop() {
+    //retrive the first value from the stack
+    const root = this._heap[0];
+    const lastVal = this._heap.pop();
+    this._heap[0] = lastVal; //add the last value to the root and check if it the max
+
+    this._siftDown();
+
     return root;
   }
 }
