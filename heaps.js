@@ -82,34 +82,33 @@ class heaps {
     let left = this._leftChild(parentIndex);
     let right = this._rightChild(parentIndex);
 
-    while (left < this.size() && right < this.size()) {
-      let maxIndex = 0;
-      if (this._heap[left] > this._heap[right]) {
-        maxIndex = left;
-      } else {
-        maxIndex = right;
-      }
+    //Loop while the left or right valuse are bigger than the size of the heap and the parent value is smaller than its child in any side
+    while (
+      (left < this.size() && this._compare(parentIndex, left)) ||
+      (right < this.size() && this._compare(parentIndex, right))
+    ) {
+      //determine the max index of the two child by cheking if right value exists first and if right is bigger than the left
+      let maxIndex =
+        right < this.size() && this._compare(left, right) ? right : left; // the default is left selected
 
-      if (this._compare(parentIndex, maxIndex)) {
-        //swap
-        this._swap(parentIndex, maxIndex);
+      //swap
+      this._swap(parentIndex, maxIndex);
 
-        parentIndex = maxIndex;
-        left = this._leftChild(parentIndex);
-        right = this._rightChild(parentIndex);
-      }
+      parentIndex = maxIndex;
+      left = this._leftChild(parentIndex);
+      right = this._rightChild(parentIndex);
     }
   }
 
   pop() {
-    //retrive the first value from the stack
-    const root = this._heap[0];
-    const lastVal = this._heap.pop();
-    this._heap[0] = lastVal; //add the last value to the root and check if it the max
+    if (this.size() > 1) {
+      this._swap(0, this.size() - 1); //swap root with last value in the array
+    }
+    const rootVal = this._heap.pop();
 
     this._siftDown();
 
-    return root;
+    return rootVal;
   }
 }
 
@@ -124,6 +123,7 @@ test.push(15);
 test.push(20);
 test.push(40);
 test.push(100);
+test.push(1);
 
 test.print();
 
