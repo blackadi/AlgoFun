@@ -18,14 +18,9 @@ const walls_gates_count = (grid) => {
   for (let row = 0; row < grid.length; row++) {
     for (let col = 0; col < grid[0].length; col++) {
       if (grid[row][col] === GATE) {
-        startPoint.push([row, col]);
+        grid = bfs(grid, [[row, col]]);
       }
     }
-  }
-
-  while (startPoint.length > 0) {
-    let start = startPoint.shift();
-    grid = bfs(grid, [start]);
   }
 
   return grid;
