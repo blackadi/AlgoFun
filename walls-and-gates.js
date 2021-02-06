@@ -13,12 +13,12 @@ const walls_gates_count = (grid) => {
   if (grid.length === 0) {
     return [];
   }
-  let startPoint = [];
 
   for (let row = 0; row < grid.length; row++) {
     for (let col = 0; col < grid[0].length; col++) {
       if (grid[row][col] === GATE) {
-        grid = bfs(grid, [[row, col]]);
+        //grid = bfs(grid, [[row, col]]);
+        gird = dfs(grid, [row, col], 0);
       }
     }
   }
@@ -70,12 +70,48 @@ const bfs = (grid, queue) => {
   return grid;
 };
 
-// const grid = [
-//   [INF, WALL, GATE, INF],
-//   [INF, INF, INF, WALL],
-//   [INF, WALL, INF, WALL],
-//   [GATE, WALL, INF, INF],
-// ];
+//DFS way
+const dfs = (grid, startPoint, counter) => {
+  let row = startPoint[0];
+  let col = startPoint[1];
+  counter++;
+  for (let i = 0; i < direction.length; i++) {
+    const currentDir = direction[i];
+    const newRow = row + currentDir[0];
+    const newCol = col + currentDir[1];
+
+    if (
+      newRow < 0 ||
+      newRow >= grid.length ||
+      newCol < 0 ||
+      newCol >= grid[0].length ||
+      grid[newRow][newCol] === WALL ||
+      grid[newRow][newCol] === GATE
+    ) {
+      continue;
+    }
+
+    if (grid[newRow][newCol] === INF) {
+      grid[newRow][newCol] = counter;
+      dfs(grid, [newRow, newCol], counter);
+    } else if (grid[newRow][newCol] > counter) {
+      grid[newRow][newCol] = counter;
+      dfs(grid, [newRow, newCol], counter);
+    }
+  }
+  return grid;
+};
+
+/***
+ * Test Cases
+ */
+
+const grid = [
+  [INF, WALL, GATE, INF],
+  [INF, INF, INF, WALL],
+  [INF, WALL, INF, WALL],
+  [GATE, WALL, INF, INF],
+];
 
 // const grid = [
 //   [INF, WALL, GATE, INF],
@@ -91,13 +127,13 @@ const bfs = (grid, queue) => {
 //   [GATE, INF, INF, GATE],
 // ];
 
-const grid = [
-  [INF, WALL, WALL, INF, WALL, GATE],
-  [WALL, GATE, WALL, GATE, INF, WALL],
-  [WALL, INF, INF, INF, WALL, INF],
-  [INF, WALL, INF, INF, GATE, WALL],
-  [INF, INF, WALL, INF, INF, WALL],
-  [WALL, GATE, INF, WALL, INF, INF],
-];
+// const grid = [
+//   [INF, WALL, WALL, INF, WALL, GATE],
+//   [WALL, GATE, WALL, GATE, INF, WALL],
+//   [WALL, INF, INF, INF, WALL, INF],
+//   [INF, WALL, INF, INF, GATE, WALL],
+//   [INF, INF, WALL, INF, INF, WALL],
+//   [WALL, GATE, INF, WALL, INF, INF],
+// ];
 
 console.log(walls_gates_count(grid));
